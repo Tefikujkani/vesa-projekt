@@ -9,16 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'react-toastify'
 import { FaEdit, FaTrash, FaUsers, FaBox } from 'react-icons/fa'
-
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  stock: number;
-}
+import { Product } from '@/types/product'
 
 const productSchema = z.object({
   _id: z.string().optional(),
