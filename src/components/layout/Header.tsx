@@ -1,6 +1,8 @@
+'use client';
+
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
-import { useCart } from '@/context/CartContext'
+import { useCart } from '@/hooks/useCart'
 import { FaShoppingCart, FaUser } from 'react-icons/fa'
 
 export function Header() {
