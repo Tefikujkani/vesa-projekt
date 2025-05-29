@@ -1,13 +1,13 @@
 import '@testing-library/jest-dom'
 import { TextEncoder, TextDecoder } from 'util'
-import { defineProperty } from 'jest-util'
+import React from 'react'
 
 // Mock next/image
 jest.mock('next/image', () => ({
   __esModule: true,
   default: (props: any) => {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img alt={props.alt} src={props.src} {...props} />
+    // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+    return React.createElement('img', { ...props })
   },
 }))
 
@@ -42,4 +42,4 @@ jest.mock('next-auth/react', () => ({
 
 // Add TextEncoder and TextDecoder to global scope
 global.TextEncoder = TextEncoder
-global.TextDecoder = TextDecoder as any 
+global.TextDecoder = TextDecoder as typeof TextDecoder 
