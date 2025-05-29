@@ -10,6 +10,16 @@ import { z } from 'zod'
 import { toast } from 'react-toastify'
 import { FaEdit, FaTrash, FaUsers, FaBox } from 'react-icons/fa'
 
+interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  image: string;
+  stock: number;
+}
+
 const productSchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -25,10 +35,10 @@ type ProductFormData = z.infer<typeof productSchema>
 export default function AdminPage() {
   const { data: session } = useSession()
   const [activeTab, setActiveTab] = useState<'products' | 'users'>('products')
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState<Product[]>([])
   const [users, setUsers] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingProduct, setEditingProduct] = useState<ProductFormData | null>(null)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
 
   const {
@@ -94,7 +104,7 @@ export default function AdminPage() {
     }
   }
 
-  const handleEdit = (product: ProductFormData) => {
+  const handleEdit = (product: Product) => {
     setEditingProduct(product)
     reset(product)
     setIsModalOpen(true)
@@ -198,7 +208,7 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {products.map((product: any) => (
+                {products.map((product: Product) => (
                   <tr key={product._id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
