@@ -1,10 +1,12 @@
 import mongoose from 'mongoose'
 
+type MongooseCache = {
+  conn: typeof mongoose | null
+  promise: Promise<typeof mongoose> | null
+}
+
 declare global {
-  var mongoose: {
-    conn: typeof mongoose | null
-    promise: Promise<typeof mongoose> | null
-  } | undefined
+  var mongoose: MongooseCache | undefined
 }
 
 const MONGODB_URI = process.env.MONGODB_URI!
@@ -33,11 +35,14 @@ async function dbConnect() {
 
     cached!.promise = mongoose
       .connect(MONGODB_URI, opts)
-      .then((mongoose) => mongoose)
+      .then((mongoose) => {
+        cached!.conn = mongoose
+        return mongoose
+      })
   }
 
   try {
-    cached!.conn = await cached?.promise
+    await cached?.promise
   } catch (e) {
     cached!.promise = null
     throw e
