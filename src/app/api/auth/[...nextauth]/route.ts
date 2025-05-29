@@ -1,21 +1,20 @@
-import NextAuth, { DefaultSession } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import { MongoDBAdapter } from '@auth/mongodb-adapter'
-import clientPromise from '@/lib/mongodb-adapter'
-import dbConnect from '@/lib/mongodb'
-import User from '@/models/User'
-import bcrypt from 'bcryptjs'
+import NextAuth from "next-auth";
+import { AuthOptions } from "next-auth";
+import { DefaultSession } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import User from "@/models/User";
+import connect from "@/lib/mongodb";
 
-declare module 'next-auth' {
-  interface Session extends DefaultSession {
-    user: {
-      id?: string
-      role?: string
-    } & DefaultSession['user']
+declare module "next-auth" {
+  interface User {
+    role?: string;
   }
 
-  interface User {
-    role?: string
+  interface Session {
+    user: {
+      role?: string;
+    } & DefaultSession["user"];
   }
 }
 
@@ -25,65 +24,59 @@ declare module 'next-auth/jwt' {
   }
 }
 
-const handler = NextAuth({
-  adapter: MongoDBAdapter(clientPromise),
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Please enter an email and password')
+      name: "credentials",
+      credentials: {},
+      async authorize(credentials: { email: string; password: string }) {
+        await connect();
+        const user = await User.findOne({ email: credentials.email });
+        
+        if (!user) {
+          throw new Error("No user found");
         }
 
-        await dbConnect()
-
-        const user = await User.findOne({ email: credentials.email })
-
-        if (!user || !user.password) {
-          throw new Error('No user found with this email')
-        }
-
-        const isValid = await bcrypt.compare(credentials.password, user.password)
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
 
         if (!isValid) {
-          throw new Error('Invalid password')
+          throw new Error("Invalid password");
         }
 
         return {
           id: user._id.toString(),
           email: user.email,
           name: user.name,
-          image: user.image,
-          role: user.role,
-        }
+          role: user.role
+        };
       },
     }),
   ],
-  session: {
-    strategy: 'jwt',
-  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role
+        token.role = user.role;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role
+        session.user.role = token.role;
       }
-      return session
+      return session;
     },
   },
-  pages: {
-    signIn: '/auth/login',
-    error: '/auth/error',
+  session: {
+    strategy: "jwt",
   },
-})
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/login",
+  },
+};
 
-export { handler as GET, handler as POST } 
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST }; 

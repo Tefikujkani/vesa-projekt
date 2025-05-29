@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: false, // Not required because of OAuth
+    required: true,
   },
   image: {
     type: String,
@@ -28,4 +28,4 @@ const userSchema = new mongoose.Schema({
   },
 })
 
-export default mongoose.models.User || mongoose.model('User', userSchema) 
+export default mongoose.models.User || mongoose.model('User', UserSchema) 
