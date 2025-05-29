@@ -4,7 +4,7 @@ import './globals.css'
 import { Providers } from '@/components/providers/Providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { Toaster } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -30,7 +30,7 @@ export default function RootLayout({
             </main>
             <Footer />
           </div>
-          <Toaster />
+          <ToastContainer />
         </Providers>
       </body>
     </html>

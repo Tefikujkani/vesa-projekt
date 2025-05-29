@@ -11,6 +11,7 @@ import { toast } from 'react-toastify'
 import { FaEdit, FaTrash, FaUsers, FaBox } from 'react-icons/fa'
 
 const productSchema = z.object({
+  _id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   price: z.number().min(0, 'Price must be positive'),
@@ -120,7 +121,7 @@ export default function AdminPage() {
     }
   }
 
-  if (!session?.user?.role === 'admin') {
+  if (session?.user?.role !== 'admin') {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">

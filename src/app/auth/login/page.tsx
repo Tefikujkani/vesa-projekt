@@ -9,7 +9,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'react-toastify'
 import { Button } from '@/components/ui/Button'
-import { FaGoogle } from 'react-icons/fa'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -50,10 +49,6 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/dashboard' })
   }
 
   return (
@@ -141,29 +136,6 @@ export default function LoginPage() {
             </Button>
           </div>
         </form>
-
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-50 text-gray-500">Or continue with</span>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={handleGoogleSignIn}
-            >
-              <FaGoogle className="w-5 h-5 mr-2" />
-              Sign in with Google
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   )

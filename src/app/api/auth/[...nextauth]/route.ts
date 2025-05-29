@@ -1,5 +1,4 @@
-import NextAuth from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
+import NextAuth, { DefaultSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { MongoDBAdapter } from '@auth/mongodb-adapter'
 import clientPromise from '@/lib/mongodb-adapter'
@@ -7,13 +6,28 @@ import dbConnect from '@/lib/mongodb'
 import User from '@/models/User'
 import bcrypt from 'bcryptjs'
 
+declare module 'next-auth' {
+  interface Session extends DefaultSession {
+    user: {
+      id?: string
+      role?: string
+    } & DefaultSession['user']
+  }
+
+  interface User {
+    role?: string
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    role?: string
+  }
+}
+
 const handler = NextAuth({
   adapter: MongoDBAdapter(clientPromise),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_ID!,
-      clientSecret: process.env.GOOGLE_SECRET!,
-    }),
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
